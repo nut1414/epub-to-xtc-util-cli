@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPUB to XTC Conversion</title>
+    <meta name="description" content="Beautiful, modern EPUB to XTC converter with glass-morphism design">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 160'%3E%3Crect x='2' y='2' width='96' height='156' rx='10' fill='%232c3e50' stroke='%231a202c' stroke-width='8'/%3E%3Crect x='14' y='14' width='72' height='100' rx='4' fill='white'/%3E%3Crect x='18' y='135' width='28' height='12' rx='6' fill='white' opacity='0.9'/%3E%3Crect x='54' y='135' width='28' height='12' rx='6' fill='white' opacity='0.9'/%3E%3C/svg%3E">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Preload for better performance -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    
+    <!-- Application Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h1>EPUB to XTC Conversion Tool</h1>
+            
+            <!-- File Upload -->
+            <div class="drop-zone" id="dropZone">
+                <i class="bi bi-file-earmark-arrow-up"></i>
+                <div>Drop EPUB file(s) here</div>
+                <small class="text-muted">or click to browse</small>
+                <input type="file" id="fileInput" class="file-input" accept=".epub" multiple>
+            </div>
+            
+            <!-- File List -->
+            <div class="file-list" id="fileListContainer" style="display: none;">
+                <div class="file-list-header">
+                    <span id="fileCount">0 files loaded</span>
+                    <button id="clearFilesBtn" class="btn btn-sm btn-outline-danger">Clear All</button>
+                </div>
+                <div class="file-list-items" id="fileListItems"></div>
+            </div>
+            
+            <!-- Device Settings -->
+            <div class="section-title">Device</div>
+            <select id="deviceType" class="form-select form-select-sm">
+                <option value="x4" selected>Xteink X4 (480x800)</option>
+                <option value="x3">Xteink X3 (528x792)</option>
+            </select>
+            
+            <!-- Text Settings -->
+            <div class="section-title">Text Settings</div>
+            
+            <div class="mb-2">
+                <label class="form-label">Orientation</label>
+                <div class="orientation-buttons" id="orientationButtons">
+                    <button type="button" class="orientation-btn active" data-orientation="0" title="Portrait (0°)">
+                        <svg viewBox="0 0 32 44" width="34" height="47">
+                            <rect x="1" y="1" width="30" height="42" rx="2" fill="white" stroke="#888" stroke-width="1"/>
+                            <rect x="4" y="4" width="24" height="30" fill="#eee"/>
+                            <text x="16" y="22" font-family="Arial" font-size="14" font-weight="bold" fill="#888" text-anchor="middle">A</text>
+                            <rect x="4" y="36" width="11" height="4" rx="1" fill="#eee"/>
+                            <rect x="17" y="36" width="11" height="4" rx="1" fill="#eee"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="orientation-btn" data-orientation="90" title="Landscape (90°)">
+                        <svg viewBox="0 0 44 32" width="47" height="34">
+                            <rect x="1" y="1" width="42" height="30" rx="2" fill="white" stroke="#888" stroke-width="1"/>
+                            <rect x="6" y="4" width="30" height="24" fill="#eee"/>
+                            <text x="21" y="20" font-family="Arial" font-size="14" font-weight="bold" fill="#888" text-anchor="middle">A</text>
+                            <rect x="38" y="4" width="4" height="11" rx="1" fill="#eee"/>
+                            <rect x="38" y="17" width="4" height="11" rx="1" fill="#eee"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="orientation-btn" data-orientation="180" title="Portrait 180°">
+                        <svg viewBox="0 0 32 44" width="34" height="47">
+                            <rect x="1" y="1" width="30" height="42" rx="2" fill="white" stroke="#888" stroke-width="1"/>
+                            <rect x="4" y="10" width="24" height="30" fill="#eee"/>
+                            <text x="16" y="29" font-family="Arial" font-size="14" font-weight="bold" fill="#888" text-anchor="middle">A</text>
+                            <rect x="4" y="4" width="11" height="4" rx="1" fill="#eee"/>
+                            <rect x="17" y="4" width="11" height="4" rx="1" fill="#eee"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="orientation-btn" data-orientation="270" title="Landscape 270°">
+                        <svg viewBox="0 0 44 32" width="47" height="34">
+                            <rect x="1" y="1" width="42" height="30" rx="2" fill="white" stroke="#888" stroke-width="1"/>
+                            <rect x="8" y="4" width="30" height="24" fill="#eee"/>
+                            <text x="23" y="20" font-family="Arial" font-size="14" font-weight="bold" fill="#888" text-anchor="middle">A</text>
+                            <rect x="2" y="4" width="4" height="11" rx="1" fill="#eee"/>
+                            <rect x="2" y="17" width="4" height="11" rx="1" fill="#eee"/>
+                        </svg>
+                    </button>
+                </div>
+                <input type="hidden" id="orientation" value="0">
+            </div>
+            
+            <div class="row g-2 mb-2">
+                <div class="col-6">
+                    <label class="form-label">Font Face</label>
+                    <select id="fontFace" class="form-select form-select-sm">
+                        <option value="Literata" selected>Literata</option>
+                        <option value="">Default (from EPUB)</option>
+                        <option value="Lora">Lora</option>
+                        <option value="Merriweather">Merriweather</option>
+                        <option value="Open Sans">Open Sans</option>
+                        <option value="Source Serif 4">Source Serif 4</option>
+                        <option value="Noto Sans">Noto Sans</option>
+                        <option value="Noto Serif">Noto Serif</option>
+                        <option value="Roboto">Roboto</option>
+                        <option value="EB Garamond">EB Garamond</option>
+                        <option value="Crimson Pro">Crimson Pro</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Text Align</label>
+                    <select id="textAlign" class="form-select form-select-sm">
+                        <option value="-1" selected>Default</option>
+                        <option value="0">Left</option>
+                        <option value="1">Right</option>
+                        <option value="2">Center</option>
+                        <option value="3">Justify</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row g-2 mb-2">
+                <div class="col-6">
+                    <label class="form-label">Word Spacing</label>
+                    <select id="wordSpacing" class="form-select form-select-sm">
+                        <option value="50">Small (50%)</option>
+                        <option value="75">Condensed (75%)</option>
+                        <option value="100" selected>Normal (100%)</option>
+                        <option value="125">Expanded (125%)</option>
+                        <option value="150">Wide (150%)</option>
+                        <option value="200">Extra Wide (200%)</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Hyphenation</label>
+                    <select id="hyphenation" class="form-select form-select-sm">
+                        <option value="0">Off</option>
+                        <option value="1">Algorithmic</option>
+                        <option value="2" selected>Dictionary</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mb-2">
+                <label class="form-label">Hyphenation Language</label>
+                <select id="hyphenationLang" class="form-select form-select-sm">
+                    <option value="auto" selected>Auto (from EPUB)</option>
+                    <option value="en">English</option>
+                    <option value="en-gb">English (UK)</option>
+                    <option value="de">German</option>
+                    <option value="fr">French</option>
+                    <option value="es">Spanish</option>
+                    <option value="it">Italian</option>
+                    <option value="pt">Portuguese</option>
+                    <option value="nl">Dutch</option>
+                    <option value="pl">Polish</option>
+                    <option value="ru">Russian</option>
+                </select>
+            </div>
+            
+            <!-- Hidden font rendering options -->
+            <select id="fontHinting" style="display: none;">
+                <option value="0">Disabled</option>
+                <option value="1" selected>Native</option>
+                <option value="2">Auto</option>
+            </select>
+            <select id="fontAntialiasing" style="display: none;">
+                <option value="0">None (1-bit)</option>
+                <option value="1">Big only</option>
+                <option value="2" selected>All</option>
+            </select>
+            
+            <div class="mb-2">
+                <input type="file" id="customFontUpload" accept=".ttf,.otf" style="display: none;">
+                <button id="uploadFontBtn" class="btn btn-sm btn-outline-secondary w-100">
+                    <i class="bi bi-upload"></i> Upload Custom Font
+                </button>
+                <div id="customFontName" class="text-muted small mt-1"></div>
+            </div>
+            
+            <div class="mb-2">
+                <label class="form-label">Font Size</label>
+                <div class="range-group">
+                    <input type="range" id="fontSize" class="form-range" min="14" max="48" value="22">
+                    <input type="number" id="fontSizeInput" class="form-control form-control-sm" min="14" max="48" value="22">
+                    <span class="unit">px</span>
+                </div>
+            </div>
+            
+            <div class="mb-2">
+                <label class="form-label">Weight</label>
+                <div class="range-group">
+                    <input type="range" id="fontWeight" class="form-range" min="100" max="900" step="100" value="400">
+                    <input type="number" id="fontWeightInput" class="form-control form-control-sm" min="100" max="900" step="100" value="400">
+                </div>
+            </div>
+            
+            <div class="mb-2">
+                <label class="form-label">Line Height</label>
+                <div class="range-group">
+                    <input type="range" id="lineHeight" class="form-range" min="80" max="200" value="120">
+                    <input type="number" id="lineHeightInput" class="form-control form-control-sm" min="80" max="200" value="120">
+                    <span class="unit">%</span>
+                </div>
+            </div>
+            
+            <div class="mb-2">
+                <label class="form-label">Margins</label>
+                <div class="range-group">
+                    <input type="range" id="margin" class="form-range" min="0" max="50" value="20">
+                    <input type="number" id="marginInput" class="form-control form-control-sm" min="0" max="50" value="20">
+                    <span class="unit">px</span>
+                </div>
+            </div>
+            
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="ignoreDocMargins">
+                <label class="form-check-label" for="ignoreDocMargins">
+                    Ignore document margins
+                </label>
+            </div>
+            
+            <!-- Image Settings -->
+            <div class="section-title">Image Settings</div>
+            
+            <div class="mb-2">
+                <label class="form-label">Quality Mode</label>
+                <select id="qualityMode" class="form-select form-select-sm">
+                    <option value="fast" selected>Fast (1-bit, XTG)</option>
+                    <option value="hq">High Quality (2-bit, XTH)</option>
+                </select>
+            </div>
+            
+            <div class="mb-2">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="enableDithering" checked>
+                    <label class="form-check-label" for="enableDithering">
+                        Dithering
+                    </label>
+                </div>
+                <div class="range-group mt-1">
+                    <input type="range" id="ditherStrength" class="form-range" min="0" max="100" value="70">
+                    <input type="number" id="ditherStrengthInput" class="form-control form-control-sm" min="0" max="100" value="70">
+                    <span class="unit">%</span>
+                </div>
+            </div>
+            
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="enableNegative">
+                <label class="form-check-label" for="enableNegative">
+                    Dark Mode (Negative)
+                </label>
+            </div>
+            
+            <!-- Progress Bar Settings -->
+            <div class="section-title">Progress Bar</div>
+            
+            <div class="row g-2 mb-2">
+                <div class="col-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="enableProgressBar" checked>
+                        <label class="form-check-label" for="enableProgressBar">
+                            Enabled
+                        </label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <select id="progressPosition" class="form-select form-select-sm">
+                        <option value="bottom" selected>Bottom</option>
+                        <option value="top">Top</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mb-2">
+                <label class="form-label small">Progress Line</label>
+                <div class="d-flex flex-wrap gap-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="showProgressLine" checked>
+                        <label class="form-check-label small" for="showProgressLine">Book</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="showChapterMarks" checked>
+                        <label class="form-check-label small" for="showChapterMarks">Chapter Marks</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="showChapterProgress">
+                        <label class="form-check-label small" for="showChapterProgress">Chapter</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="progressFullWidth">
+                        <label class="form-check-label small" for="progressFullWidth">Full Width</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-2">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="showPageInfo" checked>
+                            <label class="form-check-label small" for="showPageInfo">Page (X/Y)</label>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="showBookPercent" checked>
+                            <label class="form-check-label small" for="showBookPercent">Book %</label>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="showChapterPage" checked>
+                            <label class="form-check-label small" for="showChapterPage">Chapter (X/Y)</label>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="showChapterPercent">
+                            <label class="form-check-label small" for="showChapterPercent">Chapter %</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-2">
+                <label class="form-label">Font Size</label>
+                <div class="range-group">
+                    <input type="range" id="progressFontSize" class="form-range" min="10" max="20" value="14">
+                    <input type="number" id="progressFontSizeInput" class="form-control form-control-sm" min="10" max="20" value="14">
+                    <span class="unit">px</span>
+                </div>
+            </div>
+            
+            <div class="mb-2">
+                <label class="form-label">Edge Margin (top/bottom)</label>
+                <div class="range-group">
+                    <input type="range" id="progressEdgeMargin" class="form-range" min="0" max="30" value="0">
+                    <input type="number" id="progressEdgeMarginInput" class="form-control form-control-sm" min="0" max="30" value="0">
+                    <span class="unit">px</span>
+                </div>
+            </div>
+            
+            <div class="mb-2">
+                <label class="form-label">Side Margin (left/right)</label>
+                <div class="range-group">
+                    <input type="range" id="progressSideMargin" class="form-range" min="0" max="30" value="0">
+                    <input type="number" id="progressSideMarginInput" class="form-control form-control-sm" min="0" max="30" value="0">
+                    <span class="unit">px</span>
+                </div>
+            </div>
+            
+            <!-- Chapters -->
+            <div class="section-title">Chapters</div>
+            <div class="chapter-list" id="chapterList">
+                <div class="chapter-item text-muted">Load an EPUB file...</div>
+            </div>
+            
+            <!-- Progress Container -->
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar" id="progressFill" role="progressbar" style="width: 0%"></div>
+                </div>
+                <div class="text-center small text-muted mt-1" id="progressText">Preparing...</div>
+            </div>
+            
+            <!-- Export Buttons -->
+            <div class="mt-3">
+                <button class="btn btn-success w-100 mb-2" id="exportBtn" disabled>
+                    <i class="bi bi-file-earmark-zip"></i> Export to XTC
+                </button>
+                <button class="btn btn-primary w-100 mb-2" id="exportAllBtn" disabled style="display: none;">
+                    <i class="bi bi-files"></i> Export All Files
+                </button>
+                <button class="btn btn-outline-secondary w-100" id="exportXtgBtn" disabled>
+                    <i class="bi bi-file-earmark"></i> Export Current Page
+                </button>
+            </div>
+            
+            <!-- Footer -->
+            <div class="sidebar-footer">
+                <div class="footer-divider"></div>
+                <div class="footer-text">
+                    2026 | <a href="https://github.com/alf-arv" target="_blank" rel="noopener noreferrer">alf-arv</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Preview Toolbar -->
+            <div class="preview-toolbar">
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-secondary" id="prevBtn" disabled>
+                        <i class="bi bi-chevron-left"></i> Previous
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" id="nextBtn" disabled>
+                        Next <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <div class="text-muted" style="font-size: 0.95rem; display: flex; align-items: center; gap: 0.35rem;">
+                    <span>Page</span>
+                    <span><span id="currentPage">0</span> / <span id="totalPages">0</span></span>
+                </div>
+                
+                <div id="bookInfo" style="display: none; text-align: right; font-size: 0.95rem;">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem; align-items: flex-end;">
+                        <span class="fw-bold text-primary" id="bookTitle" style="line-height: 1.2;">-</span>
+                        <span class="text-muted" style="line-height: 1.2;">
+                            <span style="opacity: 0.8;">by</span> 
+                            <span id="bookAuthor" style="margin: 0 0.35rem;">-</span>
+                            <span style="opacity: 0.6; margin: 0 0.35rem;">•</span>
+                            <span id="bookPages">0</span> 
+                            <span style="opacity: 0.8;">pages</span>
+                        </span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-sm btn-outline-secondary" id="refreshBtn" disabled>
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+            </div>
+            
+            <!-- Preview Area -->
+            <div class="preview-area">
+                <div class="preview-frame" id="previewFrame" style="display: none;">
+                    <div class="preview-screen">
+                        <canvas id="previewCanvas" width="480" height="800"></canvas>
+                    </div>
+                </div>
+                <div class="empty-state" id="emptyState">
+                    <i class="bi bi-book"></i>
+                    <p>Load an EPUB file to begin</p>
+                </div>
+                <div class="loading-overlay hidden" id="loadingOverlay">
+                    <div class="spinner-border text-light me-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span id="loadingText">Loading...</span>
+                </div>
+                <button class="device-color-toggle" id="deviceColorToggle" title="Toggle device color" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- CREngine WASM -->
+    <script src="lib/crengine.js"></script>
+    
+    <!-- Application Configuration -->
+    <script src="config.js"></script>
+    
+    <!-- Application Script -->
+    <script src="script.js"></script>
+</body>
+</html>
