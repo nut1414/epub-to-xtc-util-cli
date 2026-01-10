@@ -6,9 +6,13 @@ Uses the [CoolReader](https://github.com/buggins/coolreader) rendering engine to
 
 ## 🚀 [**Try the Live Demo**](https://alf-arv.github.io/epub-to-xtc-util/?demo=true) (with a book pre-loaded!)
 
-## Screenshots
+### 💻 Screenshot
 
 <img src="assets/example1.png" width="700" />
+
+### 🌎 End-result
+
+<img src="assets/irl_example1.png" width="700" />
 
 ---
 
@@ -78,6 +82,6 @@ Let us gratefully acknowledge the following projects and resources used in this 
 
 ## 📄 License
 
-**Feel free to take inspiration from, modify or improve this small project to your liking without notice to me, but adhere to individual component licenses wherever needed**. Please refer to individual component licenses for specific terms. 
+This project is licensed under the GNU General Public License v2.0 (GPL-2.0). Feel free to take inspiration from, modify or improve this small project to your liking for personal use without notice to me, but adhere to the GPL-2.0 license for any redistributions based on this. Please refer to individual component licenses for specific terms. 
 
 Built with ❤️ for the e-ink reading community
