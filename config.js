@@ -105,8 +105,25 @@ var FONT_FAMILIES = {
             { file: 'CrimsonPro-Italic.ttf', url: 'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/crimsonpro/CrimsonPro-Italic%5Bwght%5D.ttf' }
         ],
         isVariable: true
+    },
+    'Noto Sans JP': {
+        variants: [
+            { file: 'NotoSansJP-Regular.ttf', url: 'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/notosansjp/NotoSansJP%5Bwght%5D.ttf' }
+        ],
+        isVariable: true
+    },
+    'Noto Serif JP': {
+        variants: [
+            { file: 'NotoSerifJP-Regular.ttf', url: 'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/notoserifjp/NotoSerifJP%5Bwght%5D.ttf' }
+        ],
+        isVariable: true
     }
 };
+
+var CJK_FONTS = [
+    { file: 'NotoSansJP-Regular.ttf', url: 'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/notosansjp/NotoSansJP%5Bwght%5D.ttf' },
+    { file: 'NotoSerifJP-Regular.ttf', url: 'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/notoserifjp/NotoSerifJP%5Bwght%5D.ttf' }
+];
 
 var ARABIC_FONTS = [
     { file: 'NotoNaskhArabic-Regular.ttf', url: 'https://cdn.jsdelivr.net/gh/googlefonts/noto-fonts@main/hinted/ttf/NotoNaskhArabic/NotoNaskhArabic-Regular.ttf' },

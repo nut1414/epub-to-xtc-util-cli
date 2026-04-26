@@ -1,0 +1,21 @@
+{
+  "name": "epub-to-xtc-util",
+  "version": "0.2.0",
+  "private": true,
+  "description": "EPUB to XTC converter — static client app served by a tiny Node HTTP server, plus a CLI for batch conversion.",
+  "bin": {
+    "epub-to-xtc": "bin/epub-to-xtc"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "cli": "node bin/epub-to-xtc",
+    "cli:test": "node bin/epub-to-xtc assets/pg11-alice-in-wonderland-licensefree.epub --out /tmp/alice.xtc"
+  },
+  "dependencies": {
+    "canvas": "^2.11.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

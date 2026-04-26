@@ -379,6 +379,17 @@
                     <i class="bi bi-file-earmark"></i> Export Current Page
                 </button>
             </div>
+
+            <!-- Settings Export/Import -->
+            <div class="mt-2 d-flex gap-2">
+                <button class="btn btn-outline-secondary btn-sm flex-fill" id="exportSettingsBtn">
+                    <i class="bi bi-download"></i> Export Settings
+                </button>
+                <button class="btn btn-outline-secondary btn-sm flex-fill" id="importSettingsBtn">
+                    <i class="bi bi-upload"></i> Import Settings
+                </button>
+                <input type="file" id="importSettingsInput" accept="application/json,.json" hidden>
+            </div>
             
             <!-- Footer -->
             <div class="sidebar-footer">
@@ -459,7 +470,10 @@
     
     <!-- Application Configuration -->
     <script src="config.js"></script>
-    
+
+    <!-- Shared Conversion Core (used by browser + CLI) -->
+    <script src="core/xtc-core.js"></script>
+
     <!-- Application Script -->
     <script src="script.js"></script>
 </body>

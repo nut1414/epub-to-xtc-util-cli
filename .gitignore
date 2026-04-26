@@ -13,3 +13,13 @@
 # Temporary files
 *.tmp
 *.log
+
+# Node
+node_modules/
+
+# CLI caches
+cli/.font-cache/
+cli/.pattern-cache/
+
+# User settings exports
+epub-xtc-settings.json

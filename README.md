@@ -1,87 +1,71 @@
-# EPUB to XTC Converter 🔄
+# epub-to-xtc
 
-A web application for converting EPUB files to [XTC/XTH format](https://gist.github.com/CrazyCoder/b125f26d6987c0620058249f59f1327d) optimized for XTEInk E-reader devices. 
+CLI to convert EPUB files to [XTC/XTH format](https://gist.github.com/CrazyCoder/b125f26d6987c0620058249f59f1327d) for XTEInk e-readers. Uses the [CoolReader](https://github.com/buggins/coolreader) engine.
 
-Uses the [CoolReader](https://github.com/buggins/coolreader) rendering engine to deliver high-quality, well-performing device-ready eBooks.
+## Install
 
-## 🚀 [**Try the Live Demo**](https://alf-arv.github.io/epub-to-xtc-util/?demo=true) (with a book pre-loaded!)
+```bash
+git clone https://github.com/nut1414/epub-to-xtc-util.git
+cd epub-to-xtc-util
+npm install
+```
 
-### 💻 Screenshot
+Requires Node ≥ 18. Native `canvas` builds via `node-pre-gyp` (Linux/Alpine may need `cairo-dev pango-dev jpeg-dev`).
 
-<img src="assets/example1.png" width="700" />
+## Get a settings file
 
-### 🌎 End-result
+The CLI accepts a JSON settings file exported from the bundled web UI.
 
-<img src="assets/irl_example1.png" width="700" />
+```bash
+npm start
+# open http://127.0.0.1:8080
+# tweak font, margins, dithering, progress bar, etc. in sidebar
+# click "Export Settings" → save as settings.json
+```
 
----
+Demo book: `http://127.0.0.1:8080/?demo=true`
 
-### 📱 Device Support
-- **[XTEInk X4](https://www.xteink.com/products/xteink-x4)**
-- **[XTEInk X3](https://www.xteink.com/products/xteink-x3)**
-- Full orientation support (0°, 90°, 180°, 270°)
+## Run
 
-### ⚡ Advanced Text Rendering
-- **Professional Typography**: Powered by CoolReader's crengine for advanced text layouts
-- **Multi-language Support**: Support for multiple hyphenation dictionaries for languages such as English, German, French, Polish, and Russian among others
-- **Font Management**: 
-  - 10+ curated Google Fonts optimized for e-ink reading
-  - Custom font upload support
-  - Variable font support with full weight ranges
-- **Text Controls**:
-  - Adjustable font size, line spacing, and margins
-  - Configurable word spacing (50% - 200%)
-  - Multiple text alignment modes (left, right, center, justify)
-  - Dictionary-based and algorithmic hyphenation
+```bash
+# single file -> writes alongside input
+node bin/epub-to-xtc book.epub
 
-### 🛠️ Features
-- **Image Grayscale Dithering**: Conversion to achieve easy-to-render grayscale images on weak hardware
-- **Quality Modes**:
-  - **Fast Mode**: 1-bit dithering for smaller file sizes (XTG/XTC formats)
-  - **High Quality Mode**: 2-bit grayscale (in XTH format)
-- **Other advanced customization**:
-  - Adjustable dither strength (0-100%)
-  - Image negative mode
-  - Custom bit depth control
-- **Progress Bar Rendering**:
-  - Customizable progress bar (with multiple positions)
-  - Chapter markers, navigation and book completion percentage
-  - Page and chapter progress indicators
-- **Table of Contents**: Interactive chapter navigation with nested hierarchy support
-- **Live Preview**: Real-time rendering preview with device frame simulation
-- **Batch Processing**
-  - Multiple file upload and conversion
-  - Batch export capabilities
-  - Individual page export (XTG/XTH single-page format)
+# explicit output
+node bin/epub-to-xtc book.epub -o /tmp/book.xtc
 
----
+# folder (recursive) -> writes to <folder>-xtc/ sibling
+node bin/epub-to-xtc ~/Books
 
-## ❤️ Credits & Acknowledgments
+# folder + custom output dir
+node bin/epub-to-xtc ~/Books -o ~/Converted
 
-Let us gratefully acknowledge the following projects and resources used in this project:
+# with settings + custom font + parallel workers
+node bin/epub-to-xtc ~/Books -s settings.json -f MyFont.ttf -c 4
+```
 
-- **[x4Converter.rho.sh](https://x4converter.rho.sh/)** - Main website inspiration
+## Flags
 
-- **[The CoolReader engine](https://github.com/buggins/coolreader)** — Responsible for document rendering, parsing and layout ([GPL v2 license](https://github.com/buggins/coolreader/blob/master/LICENSE))
+| Flag | Default | Purpose |
+|---|---|---|
+| `-o, --out <path>` | sibling | output file (file mode) or directory (folder mode) |
+| `-s, --settings <path>` | bundled defaults | settings JSON from web UI |
+| `-f, --font <path>` | none | custom TTF/OTF; overrides `settings.fontFace` |
+| `--format <fmt>` | from settings | `xtc` (1-bit), `xtch` (2-bit HQ), `xtg`, `xth` |
+| `--patterns-dir <p>` | none | hyphenation patterns directory |
+| `--set key=value` | — | inline setting override (repeatable) |
+| `-c, --concurrency N` | 1 | parallel workers (folder mode) |
+| `--worker-batch N` | 3 | restart each worker after N books (mitigates WASM table leak) |
+| `--retries N` | 3 | max attempts per book on failure |
+| `-q, --quiet` | off | suppress progress |
 
-- **[Alice's Adventures in Wonderland](https://www.gutenberg.org/ebooks/11)** by Lewis Carroll — Demo book from Project Gutenberg (Public Domain)
+## Notes
 
-- **[Floyd-Steinberg Dithering](https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering)** — Industry-standard error diffusion algorithm (1976)
-  - Optimal grayscale conversion for limited color palettes (adapted for e-ink display characteristics)
-  - Reference: Floyd, R.W.; Steinberg, L. (1976). "An adaptive algorithm for spatial grey scale"
+- Folder input is always traversed recursively. Output mirrors directory structure.
+- Existing output files are overwritten.
+- Default fonts (Literata, Noto Naskh Arabic, Noto Sans JP, Noto Serif JP) are downloaded on first run and cached under `cli/.font-cache/`.
+- Custom font is auto-set as primary; CJK + Arabic fallbacks remain active.
 
-- **[Google Fonts](https://fonts.google.com/)** — High-quality, open source typefaces ([SIL Open Font License](https://scripts.sil.org/OFL))
+## License
 
-- **[Bootstrap 5.3](https://getbootstrap.com/)** — Modern, responsive UI framework ([MIT License](https://github.com/twbs/bootstrap/blob/main/LICENSE))
-  
-- **[Bootstrap Icons](https://icons.getbootstrap.com/)** — Comprehensive icon library ([MIT License](https://github.com/twbs/bootstrap/blob/main/LICENSE))
-
-- **[jsDelivr](https://www.jsdelivr.com/)** — Free, fast, and reliable CDN (used for fonts)
-
----
-
-## 📄 License
-
-This project is licensed under the GNU General Public License v2.0 (GPL-2.0). Feel free to take inspiration from, modify or improve this small project to your liking for personal use without notice to me, but adhere to the GPL-2.0 license for any redistributions based on this. Please refer to individual component licenses for specific terms. 
-
-Built with ❤️ for the e-ink reading community
+GPL-2.0
